@@ -11,7 +11,11 @@ import UIKit
 public class FloatyTextField: FloatyControl {
 
     // MARK: - Weak properties
-    public weak var delegate: UITextFieldDelegate?
+    public weak var delegate: UITextFieldDelegate? {
+        didSet {
+            textField.delegate = delegate
+        }
+    }
 
     // MARK: - Properties
     let textField = UITextField()
