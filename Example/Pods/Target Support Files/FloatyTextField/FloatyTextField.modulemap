@@ -1,0 +1,6 @@
+framework module FloatyTextField {
+  umbrella header "FloatyTextField-umbrella.h"
+
+  export *
+  module * { export * }
+}
