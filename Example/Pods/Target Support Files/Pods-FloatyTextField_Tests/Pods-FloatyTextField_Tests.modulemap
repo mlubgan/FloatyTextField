@@ -1,0 +1,6 @@
+framework module Pods_FloatyTextField_Tests {
+  umbrella header "Pods-FloatyTextField_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}
