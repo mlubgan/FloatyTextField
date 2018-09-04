@@ -20,6 +20,11 @@ public class FloatyTextField: FloatyControl {
     // MARK: - Properties
     let textField = UITextField()
 
+    /// Textfield's text
+    public var text: String? {
+        return textField.text
+    }
+    
     // MARK: - Customization properties
     /// Textfield's font color
     public var textFieldTextColor: UIColor? = BaseValues.textFieldColor {
@@ -37,7 +42,7 @@ public class FloatyTextField: FloatyControl {
 
     // MARK: Inits
     public init(textFieldPaddings: UIEdgeInsets = FloatyControlConstants.textFieldPaddings, placeholderPadding: FloatyControlPadding = .center) {
-        super.init(inputField: textField, textFieldPaddings: textFieldPaddings, placeholderPadding: placeholderPadding)
+        super.init(inputField: textField, inputPaddings: textFieldPaddings, placeholderPadding: placeholderPadding)
     }
 
     required convenience public init?(coder aDecoder: NSCoder) {

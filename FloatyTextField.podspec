@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'FloatyTextField'
-  s.version          = '0.1.2'
+  s.version          = '0.1.4'
   s.summary          = 'FloatyTextField provides material design inspired TextField and TextView.'
   s.swift_version = '4.0'
   s.description      = <<-DESC

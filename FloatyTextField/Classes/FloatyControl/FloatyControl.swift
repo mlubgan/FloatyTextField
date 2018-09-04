@@ -9,13 +9,11 @@
 import UIKit
 import SnapKit
 
-typealias InputField = UITextInput & UIView
-
 public class FloatyControl: UIControl {
 
     // MARK: - Views properties
     /// Should be overriden with UITextField or UITextView
-    let inputField: InputField
+    let inputField: UIView
     let placeholderLabel = UILabel()
     let borderView = UIView()
 
@@ -87,9 +85,9 @@ public class FloatyControl: UIControl {
     }
 
     // MARK: - Inits
-    init(inputField: InputField, textFieldPaddings: UIEdgeInsets, placeholderPadding: FloatyControlPadding) {
+    init(inputField: UIView, inputPaddings: UIEdgeInsets, placeholderPadding: FloatyControlPadding) {
         self.inputField = inputField
-        self.inputPaddings = textFieldPaddings
+        self.inputPaddings = inputPaddings
         self.placeholderPadding = placeholderPadding
         super.init(frame: .zero)
         setup()

@@ -55,6 +55,11 @@ public class FloatyTextView: FloatyControl {
         return floatyTextViewDelegate
     }()
     
+    /// TextView's text
+    public var text: String? {
+        return textView.text
+    }
+    
     // MARK: - Customization properties
     /// TextView's font color
     public var textViewTextColor: UIColor? = BaseValues.textFieldColor {
@@ -72,7 +77,7 @@ public class FloatyTextView: FloatyControl {
 
     // MARK: Inits
     public init(textFieldPaddings: UIEdgeInsets = FloatyControlConstants.textFieldPaddings, placeholderPadding: FloatyControlPadding = .center) {
-        super.init(inputField: textView, textFieldPaddings: textFieldPaddings, placeholderPadding: placeholderPadding)
+        super.init(inputField: textView, inputPaddings: textFieldPaddings, placeholderPadding: placeholderPadding)
     }
 
     required convenience public init?(coder aDecoder: NSCoder) {
