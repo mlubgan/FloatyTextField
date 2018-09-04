@@ -199,11 +199,11 @@ public class FloatyControl: UIControl {
                 floatingPlaceholderConstraints.append(constraint)
             case .leading(let padding):
                 let sidePadding = FloatyControlConstants.floatingPlaceholderSidePadding
-                let constraint = make.leading.equalTo(borderView.snp.leading).offset(cornerRadius + padding - 2 * sidePadding).priority(750)
+                let constraint = make.leading.equalTo(borderView.snp.leading).offset(cornerRadius + padding + sidePadding).priority(750)
                 floatingPlaceholderConstraints.append(constraint)
             case .trailing(let padding):
                 let sidePadding = FloatyControlConstants.floatingPlaceholderSidePadding
-                let constraint = make.trailing.equalTo(borderView.snp.trailing).offset(-(cornerRadius + padding - 2 * sidePadding)).priority(750)
+                let constraint = make.trailing.equalTo(borderView.snp.trailing).offset(-(cornerRadius + padding + sidePadding)).priority(750)
                 floatingPlaceholderConstraints.append(constraint)
             }
             let constraint = make.centerY.equalTo(borderView.snp.top).priority(750)
@@ -312,9 +312,8 @@ extension FloatyControl {
     /// Draws borderPaths for animating border
     func prepareBorderPathForAnimation() -> BezierPaths {
         let borderViewWidth = borderView.frame.width
-        let scale = FloatyControlConstants.floatingPlaceholderScale
         let sidePadding = FloatyControlConstants.floatingPlaceholderSidePadding
-        let textSpace = placeholderLabel.systemLayoutSizeFitting(UILayoutFittingCompressedSize).width * scale
+        let textSpace = placeholderLabel.systemLayoutSizeFitting(UILayoutFittingCompressedSize).width
         let halfOfText = textSpace / 2
 
         let centerX: CGFloat
@@ -347,9 +346,8 @@ extension FloatyControl {
     func prepareBorderPath() -> UIBezierPath {
         let borderViewWidth = borderView.frame.width
         let borderViewHeight = borderView.frame.height
-        let scale = FloatyControlConstants.floatingPlaceholderScale
         let sidePadding = FloatyControlConstants.floatingPlaceholderSidePadding
-        let textSpace = placeholderLabel.systemLayoutSizeFitting(UILayoutFittingCompressedSize).width * scale
+        let textSpace = placeholderLabel.systemLayoutSizeFitting(UILayoutFittingCompressedSize).width
 
         let topLeftPoint: CGFloat
         let topRightPoint: CGFloat
