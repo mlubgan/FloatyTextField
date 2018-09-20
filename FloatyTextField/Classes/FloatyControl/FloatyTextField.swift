@@ -67,8 +67,12 @@ public class FloatyTextField: FloatyControl {
         textField.textColor = textFieldTextColor
         textField.addTarget(self, action: #selector(textFieldDidBeginEditing), for: .editingDidBegin)
         textField.addTarget(self, action: #selector(textFieldDidEndEditing), for: .editingDidEnd)
-
+        
         super.setup()
+        
+        placeholderLabel.snp.makeConstraints { (make) in
+            make.bottom.equalToSuperview().offset(inputPaddings.bottom)
+        }
     }
 
 }
