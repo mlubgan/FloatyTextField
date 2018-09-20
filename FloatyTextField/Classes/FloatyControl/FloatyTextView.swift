@@ -46,7 +46,7 @@ public class FloatyTextView: FloatyControl {
     }
     
     // MARK: - Properties
-    let textView = UITextView()
+    public let textView = UITextView()
     
     /// RoundedTextView's delegate, set if user doesn't provide own delegate
     lazy var floatyTextViewDelegate: FloatyTextViewDelegate = {
@@ -57,7 +57,14 @@ public class FloatyTextView: FloatyControl {
     
     /// TextView's text
     public var text: String? {
-        return textView.text
+        get {
+            return textView.text
+        }
+        
+        set {
+            isPlaceholderFloating = newValue != nil
+            textView.text = newValue
+        }
     }
     
     // MARK: - Customization properties
@@ -79,12 +86,16 @@ public class FloatyTextView: FloatyControl {
     public init(textFieldPaddings: UIEdgeInsets = FloatyControlConstants.textFieldPaddings, placeholderPadding: FloatyControlPadding = .center) {
         super.init(inputField: textView, inputPaddings: textFieldPaddings, placeholderPadding: placeholderPadding)
     }
-
-    required convenience public init?(coder aDecoder: NSCoder) {
-        self.init()
+    
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
-
+    
     // MARK: - Initial setup
+    public func initialSetup(labelPaddings: UIEdgeInsets = FloatyControlConstants.textFieldPaddings, placeholderPaddings: FloatyControlPadding = .center) {
+        super.initialSetup(inputField: textView, inputPaddings: labelPaddings, placeholderPadding: placeholderPaddings)
+    }
+    
     override func setup() {
         delegate = floatyTextViewDelegate
         textView.backgroundColor = .clear

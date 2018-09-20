@@ -13,15 +13,15 @@ public class FloatyControl: UIControl {
 
     // MARK: - Views properties
     /// Should be overriden with UITextField or UITextView
-    let inputField: UIView
+    var inputField: UIView!
     let placeholderLabel = UILabel()
     let borderView = UIView()
 
     // MARK: - Properties
     /// TextField paddings, placeholderLabel paddings are equal while textField is empty
-    let inputPaddings: UIEdgeInsets
+    var inputPaddings: UIEdgeInsets!
     /// Floating placeholder paddings
-    let placeholderPadding: FloatyControlPadding
+    var placeholderPadding: FloatyControlPadding!
     /// Layer containing borderPath
     var borderLayer: CAShapeLayer?
     /// Layer containg leftPath for border animation
@@ -80,39 +80,62 @@ public class FloatyControl: UIControl {
     /// Placeholder's font
     public var placeholderFont: UIFont? = BaseValues.placeholderFont {
         didSet {
-            placeholderLabel.font = placeholderFont
+            if !isPlaceholderFloating {
+                placeholderLabel.font = placeholderFont
+                updateBorder()
+            }
+        }
+    }
+
+    /// Placeholder's floating font
+    public var placeholderFloatingFont: UIFont? = BaseValues.placeholderFont {
+        didSet {
+            if isPlaceholderFloating {
+                placeholderLabel.font = placeholderFloatingFont
+                updateBorder()
+            }
         }
     }
 
     // MARK: - Inits
     init(inputField: UIView, inputPaddings: UIEdgeInsets, placeholderPadding: FloatyControlPadding) {
-        self.inputField = inputField
-        self.inputPaddings = inputPaddings
-        self.placeholderPadding = placeholderPadding
         super.init(frame: .zero)
-        setup()
+        initialSetup(inputField: inputField, inputPaddings: inputPaddings, placeholderPadding: placeholderPadding)
     }
 
-    required convenience public init?(coder aDecoder: NSCoder) {
-        fatalError()
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
 
     // MARK: - Initial setup
+    func initialSetup(inputField: UIView, inputPaddings: UIEdgeInsets, placeholderPadding: FloatyControlPadding) {
+        self.inputField = inputField
+        self.placeholderPadding = placeholderPadding
+        self.inputPaddings = inputPaddings
+
+        setup()
+    }
+
     func setup() {
+        backgroundColor = .clear
         placeholderLabel.font = placeholderFont
         placeholderLabel.textColor = placeholderTextColor
         translatesAutoresizingMaskIntoConstraints = false
+
+        addTapAction()
         doLayout()
     }
 
     func doLayout() {
-        addSubview(borderView)
+        if borderView.superview == nil {
+            addSubview(borderView)
+            borderView.addSubview(inputField)
+        }
         let fontSize = placeholderFont?.pointSize ?? 15
         borderView.snp.makeConstraints { (make) in
             make.edges.equalTo(UIEdgeInsets(top: fontSize / 2, left: 0, bottom: 0, right: 0))
         }
 
-        borderView.addSubview(inputField)
         inputField.snp.makeConstraints { (make) in
             make.edges.equalTo(inputPaddings)
         }
@@ -122,6 +145,8 @@ public class FloatyControl: UIControl {
     // MARK: - PlaceholderLabel layout
     /// Setups placeholder in textField's frame
     func setupPlaceholder(animated: Bool) {
+        placeholderLabel.font = placeholderFont
+        
         if placeholderLabel.superview == nil {
             borderView.addSubview(placeholderLabel)
         }
@@ -156,13 +181,15 @@ public class FloatyControl: UIControl {
     /// Creates placeholder constraints
     func makePlaceholderConstraints() {
         placeholderLabel.snp.makeConstraints { (make) in
-            let constraint = make.edges.equalTo(inputPaddings).priority(750)
+            let constraint = make.leading.top.trailing.equalTo(inputPaddings).priority(750)
             placeholderConstraints.append(constraint)
         }
     }
 
     /// Setups floating placeholder
     func setupFloatingPlaceholder(animated: Bool) {
+        placeholderLabel.font = placeholderFloatingFont ?? placeholderFont
+        
         if floatingPlaceholderConstraints.isEmpty, placeholderLabel.superview != nil {
             makeFloatingPlaceholderConstraints()
         }
@@ -180,7 +207,8 @@ public class FloatyControl: UIControl {
                         let scale = FloatyControlConstants.floatingPlaceholderScale
                         strongSelf.placeholderLabel.transform = CGAffineTransform(scaleX: scale, y: scale)
                     }.done { [weak self] in
-                        self?.updateBorder()
+                        guard let strongSelf = self else { return }
+                        strongSelf.updateBorder()
                     }.start()
                 }
             }
@@ -194,17 +222,19 @@ public class FloatyControl: UIControl {
     func makeFloatingPlaceholderConstraints() {
         placeholderLabel.snp.makeConstraints { (make) in
             switch placeholderPadding {
-            case .center:
+            case .some(.center):
                 let constraint = make.centerX.equalToSuperview().priority(750)
                 floatingPlaceholderConstraints.append(constraint)
-            case .leading(let padding):
+            case .some(.leading(let padding)):
                 let sidePadding = FloatyControlConstants.floatingPlaceholderSidePadding
                 let constraint = make.leading.equalTo(borderView.snp.leading).offset(cornerRadius + padding + sidePadding).priority(750)
                 floatingPlaceholderConstraints.append(constraint)
-            case .trailing(let padding):
+            case .some(.trailing(let padding)):
                 let sidePadding = FloatyControlConstants.floatingPlaceholderSidePadding
                 let constraint = make.trailing.equalTo(borderView.snp.trailing).offset(-(cornerRadius + padding + sidePadding)).priority(750)
                 floatingPlaceholderConstraints.append(constraint)
+            case .none:
+                fatalError()
             }
             let constraint = make.centerY.equalTo(borderView.snp.top).priority(750)
             floatingPlaceholderConstraints.append(constraint)
@@ -293,6 +323,8 @@ extension FloatyControl {
 
     /// Updates border
     func updateBorder() {
+        guard inputField != nil, inputPaddings != nil, placeholderPadding != nil else { return }
+        
         let path = prepareBorderPath()
         let newBorderLayer = CAShapeLayer()
         newBorderLayer.path = path.cgPath
@@ -311,20 +343,26 @@ extension FloatyControl {
 
     /// Draws borderPaths for animating border
     func prepareBorderPathForAnimation() -> BezierPaths {
+        let label = UILabel()
+        label.text = placeholderLabel.text
+        label.font = placeholderFloatingFont ?? placeholderFont
+        
         let borderViewWidth = borderView.frame.width
         let sidePadding = FloatyControlConstants.floatingPlaceholderSidePadding
-        let textSpace = placeholderLabel.systemLayoutSizeFitting(UILayoutFittingCompressedSize).width
+        let textSpace = label.systemLayoutSizeFitting(UILayoutFittingCompressedSize).width
         let halfOfText = textSpace / 2
 
         let centerX: CGFloat
 
         switch placeholderPadding {
-        case .center:
+        case .some(.center):
             centerX = borderViewWidth / 2
-        case .leading(let padding):
+        case .some(.leading(let padding)):
             centerX = cornerRadius + padding + sidePadding + halfOfText
-        case .trailing(let padding):
+        case .some(.trailing(let padding)):
             centerX = borderViewWidth - cornerRadius - padding - sidePadding - halfOfText
+        case .none:
+            fatalError()
         }
 
         let leftX = centerX - halfOfText - sidePadding
@@ -352,15 +390,17 @@ extension FloatyControl {
         let topLeftPoint: CGFloat
         let topRightPoint: CGFloat
         switch placeholderPadding {
-        case .center:
+        case .some(.center):
             topLeftPoint = (borderViewWidth - textSpace) / 2 - sidePadding
             topRightPoint = topLeftPoint + textSpace + 2 * sidePadding
-        case .leading(let padding):
+        case .some(.leading(let padding)):
             topLeftPoint = cornerRadius + padding
             topRightPoint = cornerRadius + padding + textSpace + 2 * sidePadding
-        case .trailing(let padding):
+        case .some(.trailing(let padding)):
             topRightPoint = borderViewWidth - cornerRadius - padding
             topLeftPoint = borderViewWidth - cornerRadius - padding - 2 * sidePadding - textSpace
+        case .none:
+            fatalError()
         }
 
         let bezierPath = UIBezierPath()

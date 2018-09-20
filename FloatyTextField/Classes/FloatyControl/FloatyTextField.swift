@@ -18,11 +18,18 @@ public class FloatyTextField: FloatyControl {
     }
 
     // MARK: - Properties
-    let textField = UITextField()
+    public let textField = UITextField()
 
     /// Textfield's text
     public var text: String? {
-        return textField.text
+        get {
+            return textField.text
+        }
+        
+        set {
+            isPlaceholderFloating = newValue != nil
+            textField.text = newValue
+        }
     }
     
     // MARK: - Customization properties
@@ -44,12 +51,16 @@ public class FloatyTextField: FloatyControl {
     public init(textFieldPaddings: UIEdgeInsets = FloatyControlConstants.textFieldPaddings, placeholderPadding: FloatyControlPadding = .center) {
         super.init(inputField: textField, inputPaddings: textFieldPaddings, placeholderPadding: placeholderPadding)
     }
-
-    required convenience public init?(coder aDecoder: NSCoder) {
-        self.init()
+    
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
-
+    
     // MARK: - Initial setup
+    public func initialSetup(labelPaddings: UIEdgeInsets = FloatyControlConstants.textFieldPaddings, placeholderPaddings: FloatyControlPadding = .center) {
+        super.initialSetup(inputField: textField, inputPaddings: labelPaddings, placeholderPadding: placeholderPaddings)
+    }
+    
     override func setup() {
         textField.delegate = delegate
         textField.font = textFieldFont

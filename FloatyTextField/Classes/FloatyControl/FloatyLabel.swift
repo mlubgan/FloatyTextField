@@ -11,7 +11,7 @@ import UIKit
 public class FloatyLabel: FloatyControl {
     
     // MARK: - Properties
-    let label = UILabel()
+    public let label = UILabel()
     
     /// Label's text
     public var text: String? {
@@ -53,11 +53,15 @@ public class FloatyLabel: FloatyControl {
         isPlaceholderFloating = true
     }
     
-    required convenience public init?(coder aDecoder: NSCoder) {
-        self.init()
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
     
     // MARK: - Initial setup
+    public func initialSetup(labelPaddings: UIEdgeInsets = FloatyControlConstants.textFieldPaddings, placeholderPaddings: FloatyControlPadding = .center) {
+        super.initialSetup(inputField: label, inputPaddings: labelPaddings, placeholderPadding: placeholderPaddings)
+    }
+    
     override func setup() {
         super.setup()
         isPlaceholderFloating = true
