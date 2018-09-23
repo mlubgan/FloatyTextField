@@ -1,8 +1,8 @@
 //
 //  FloatyTextView.swift
-//  FloatyTextField
+//  FloatyControl
 //
-//  Created by Michał Łubgan on 30.08.2018.
+//  Created by Michał Łubgan on 22.09.2018.
 //  Copyright © 2018 Michał Łubgan. All rights reserved.
 //
 
@@ -33,7 +33,7 @@ protocol FloatyTextViewInternalDelegate: class {
 }
 
 public class FloatyTextView: FloatyControl {
-
+    
     // MARK: - Weak properties
     public weak var delegate: FloatyTextViewDelegate? {
         didSet {
@@ -55,36 +55,9 @@ public class FloatyTextView: FloatyControl {
         return floatyTextViewDelegate
     }()
     
-    /// TextView's text
-    public var text: String? {
-        get {
-            return textView.text
-        }
-        
-        set {
-            isPlaceholderFloating = newValue != nil
-            textView.text = newValue
-        }
-    }
-    
-    // MARK: - Customization properties
-    /// TextView's font color
-    public var textViewTextColor: UIColor? = BaseValues.textFieldColor {
-        didSet {
-            textView.textColor = textViewTextColor
-        }
-    }
-
-    /// TextView's font
-    public var textViewFont: UIFont? = BaseValues.textFieldFont {
-        didSet {
-            textView.font = textViewFont
-        }
-    }
-
     // MARK: Inits
-    public init(textFieldPaddings: UIEdgeInsets = FloatyControlConstants.textFieldPaddings, placeholderPadding: FloatyControlPadding = .center) {
-        super.init(inputField: textView, inputPaddings: textFieldPaddings, placeholderPadding: placeholderPadding)
+    public init(floatyPaddings: FloatyControlPaddings = .leading, cornerRadius: CGFloat) {
+        super.init(inputField: textView, floatyPaddings: floatyPaddings, cornerRadius: cornerRadius)
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -92,19 +65,45 @@ public class FloatyTextView: FloatyControl {
     }
     
     // MARK: - Initial setup
-    public func initialSetup(labelPaddings: UIEdgeInsets = FloatyControlConstants.textFieldPaddings, placeholderPaddings: FloatyControlPadding = .center) {
-        super.initialSetup(inputField: textView, inputPaddings: labelPaddings, placeholderPadding: placeholderPaddings)
+    public func initialSetup(floatyPaddings: FloatyControlPaddings = .leading, cornerRadius: CGFloat) {
+        setup(inputField: textView, floatyPaddings: floatyPaddings, cornerRadius: cornerRadius)
     }
     
     override func setup() {
         delegate = floatyTextViewDelegate
         textView.backgroundColor = .clear
-        textView.font = textViewFont
-        textView.textColor = textViewTextColor
         
         super.setup()
     }
+    
+    override func doLayout() {
+        super.doLayout()
+        
+        placeholderLabel.snp.makeConstraints { (make) in
+            let constraints = make.leading.trailing.top.equalTo(inputField).priority(750)
+            placeholderConstraints = [constraints]
+        }
+        
+        inputField.snp.makeConstraints { (make) in
+            make.edges.equalTo(Constants.paddings)
+        }
+    }
+    
+}
 
+// MARK: - Extension with Constants
+private extension FloatyTextView {
+    
+    // MARK: - Constants
+    struct Constants {
+        
+        private init() { }
+        
+        // MARK: - InputField and PlaceholderLabel Constants
+        static let paddings = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        
+    }
+    
 }
 
 // MARK: RoundedTextViewInternalDelegate
@@ -116,12 +115,13 @@ extension FloatyTextView: FloatyTextViewInternalDelegate {
             isPlaceholderFloating = true
         }
     }
-
+    
     /// Changes the placeholder state on editing if needed
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text?.isEmpty ?? true {
             isPlaceholderFloating = false
         }
     }
-
+    
 }
+
