@@ -57,7 +57,7 @@ private extension FloatyLabel {
         private init() { }
         
         // MARK: - InputField and PlaceholderLabel Constants
-        static let paddings = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        static let paddings = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
 
     }
 

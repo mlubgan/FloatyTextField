@@ -141,11 +141,11 @@ public class FloatyControl: UIControl {
 
             switch floatyPaddings {
             case .some(.leading):
-                horizontalConstraint = make.leading.equalTo(borderView.snp.leading).offset(cornerRadius).priority(750)
+                horizontalConstraint = make.leading.equalToSuperview().offset(FloatyConstants.leadingPadding * Constants.floatingPlaceholderScale).priority(750)
             case .some(.center):
                 horizontalConstraint = make.centerX.equalToSuperview().priority(750)
             case .some(.trailing):
-                horizontalConstraint = make.trailing.equalTo(borderView.snp.trailing).offset(-cornerRadius).priority(750)
+                horizontalConstraint = make.trailing.equalToSuperview().offset(-FloatyConstants.leadingPadding * Constants.floatingPlaceholderScale).priority(750)
             case .none:
                 fatalError("Floaty paddings should be specified")
             }
@@ -324,7 +324,7 @@ private extension FloatyControl {
 
         // MARK: BorderLayer Constants
         static let borderWidth: CGFloat = 2
-        static let sidePadding: CGFloat = 8
+        static let sidePadding: CGFloat = 0
 
         // MARK: - BorderAnimation Constants
         static let borderAnimationDuration: TimeInterval = 0.175

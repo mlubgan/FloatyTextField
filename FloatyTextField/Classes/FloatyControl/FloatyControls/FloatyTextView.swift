@@ -48,6 +48,17 @@ public class FloatyTextView: FloatyControl {
     // MARK: - Properties
     public let textView = UITextView()
     
+    public var text: String? {
+        set {
+            textView.text = newValue
+            isPlaceholderFloating = !(newValue ?? "").isEmpty
+        }
+        
+        get {
+            return textView.text
+        }
+    }
+    
     /// RoundedTextView's delegate, set if user doesn't provide own delegate
     lazy var floatyTextViewDelegate: FloatyTextViewDelegate = {
         let floatyTextViewDelegate = FloatyTextViewDelegate()
@@ -100,7 +111,7 @@ private extension FloatyTextView {
         private init() { }
         
         // MARK: - InputField and PlaceholderLabel Constants
-        static let paddings = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        static let paddings = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         
     }
     
