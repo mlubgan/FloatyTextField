@@ -28,7 +28,7 @@ public class FloatyControl: UIControl {
     var borderFactoryConfig: BorderFactoryConfig {
         let containerSize = borderView.frame.size
         let scale = Constants.floatingPlaceholderScale
-        let textSpace = placeholderLabel.systemLayoutSizeFitting(UILayoutFittingCompressedSize).width * scale
+        let textSpace = placeholderLabelTextWidth * scale
         let sidePadding = Constants.sidePadding
 
         let config = BorderFactoryConfig(containerSize: containerSize,
@@ -48,6 +48,8 @@ public class FloatyControl: UIControl {
     var leftBorderLayer: CAShapeLayer?
     /// Layer containg rightPath for border animation
     var rightBorderLayer: CAShapeLayer?
+    /// Placeholder width constraint
+    var placeholderWidthConstraint: NSLayoutConstraint?
     /// Placeholder not-floating constraints
     var placeholderConstraints: [ConstraintMakerFinalizable]?
     /// Placeholder floating constraints
@@ -66,8 +68,31 @@ public class FloatyControl: UIControl {
     var superviewBackgroundColor: UIColor? {
         return superview?.backgroundColor
     }
+    /// Returns size of text in label
+    var placeholderLabelTextWidth: CGFloat {
+        let text = placeholderLabel.text ?? ""
+        let label = UILabel()
+        label.font = placeholderLabel.font
+        label.text = text
+
+        return label.intrinsicContentSize.width
+    }
 
     // MARK: - Customization properties
+    /// Placeholder text
+    public var placeholder: String = "" {
+        didSet {
+            placeholderLabel.text = placeholder
+            updatePlaceholderConstraints()
+        }
+    }
+    /// Placeholder's font
+    public var placeholderFont: UIFont = UIFont.systemFont(ofSize: 15) {
+        didSet {
+            placeholderLabel.font = placeholderFont
+            updatePlaceholderConstraints()
+        }
+    }
     /// Border color, default is darkGray
     public var borderColor: UIColor = .darkGray {
         didSet {
@@ -105,6 +130,9 @@ public class FloatyControl: UIControl {
     func setup() {
         backgroundColor = .clear
         translatesAutoresizingMaskIntoConstraints = false
+        placeholderLabel.textAlignment = .left
+        placeholderLabel.adjustsFontSizeToFitWidth = true
+        placeholderLabel.minimumScaleFactor = 0.5
 
         doLayout()
     }
@@ -141,11 +169,11 @@ public class FloatyControl: UIControl {
 
             switch floatyPaddings {
             case .some(.leading):
-                horizontalConstraint = make.leading.equalToSuperview().offset(FloatyConstants.leadingPadding * Constants.floatingPlaceholderScale).priority(750)
+                horizontalConstraint = make.leading.equalToSuperview().offset(FloatyConstants.leadingPadding).priority(750)
             case .some(.center):
                 horizontalConstraint = make.centerX.equalToSuperview().priority(750)
             case .some(.trailing):
-                horizontalConstraint = make.trailing.equalToSuperview().offset(-FloatyConstants.leadingPadding * Constants.floatingPlaceholderScale).priority(750)
+                horizontalConstraint = make.trailing.equalToSuperview().offset(-FloatyConstants.leadingPadding).priority(750)
             case .none:
                 fatalError("Floaty paddings should be specified")
             }
@@ -161,24 +189,43 @@ public class FloatyControl: UIControl {
     public override func resignFirstResponder() -> Bool {
         return inputField.resignFirstResponder()
     }
-    
+
     /// Updates border
     public func updateBorder() {
         guard didCallSetup else { return }
         
         let borderFactory = BorderFactory()
         let borderBezierPath = borderFactory.createBorder(config: borderFactoryConfig)
-        
+
         let newBorderLayer = setupShapeLayer()
         newBorderLayer.strokeColor = borderColor.cgColor
         newBorderLayer.path = borderBezierPath.cgPath
         borderView.layer.insertSublayer(newBorderLayer, at: 0)
-        
+
         borderLayer?.removeFromSuperlayer()
         leftBorderLayer?.removeFromSuperlayer()
         rightBorderLayer?.removeFromSuperlayer()
-        
+
         borderLayer = newBorderLayer
+    }
+
+    /// Updates constraint
+    private func updatePlaceholderConstraints() {
+        let width = placeholderLabelTextWidth * (isPlaceholderFloating ? Constants.floatingPlaceholderScale : 1)
+        if let constraint = placeholderWidthConstraint {
+            constraint.constant = width
+        } else {
+            placeholderWidthConstraint = createPlaceholderWidthConstraint(constant: width)
+        }
+        layoutIfNeeded()
+    }
+    
+    /// Creates constraint for width
+    private func createPlaceholderWidthConstraint(constant: CGFloat) -> NSLayoutConstraint {
+        let constraint = placeholderLabel.widthAnchor.constraint(equalToConstant: constant)
+        addConstraint(constraint)
+
+        return constraint
     }
 
     // MARK: - Lifecycle methods
@@ -197,8 +244,11 @@ extension FloatyControl {
 
     func setupFloatingPlaceholder(animated: Bool) {
         willAnimateFloatingPlaceholder?(self)
-        
+
         let config = borderFactoryConfig
+
+        let scale = Constants.floatingPlaceholderScale
+        placeholderWidthConstraint?.constant = placeholderLabelTextWidth * scale
         
         if animated {
             animateBorder(config: config) {
@@ -212,9 +262,8 @@ extension FloatyControl {
 
                     UIView.animationQ.add(duration: duration, options: .curveEaseOut, dampingRatio: dampingRatio) { [weak self] in
                         guard let strongSelf = self else { return }
+
                         strongSelf.borderView.layoutIfNeeded()
-                        let scale = Constants.floatingPlaceholderScale
-                        strongSelf.placeholderLabel.transform = CGAffineTransform(scaleX: scale, y: scale)
                     }.done { [weak self] in
                         guard let strongSelf = self else { return }
                         strongSelf.updateBorder()
@@ -230,12 +279,13 @@ extension FloatyControl {
 
     func setupNonFloatingPlaceholder(animated: Bool) {
         let config = borderFactoryConfig
-        
+
         willAnimatePlaceholder?(self)
 
         placeholderFloatingConstraints?.forEach({ $0.constraint.deactivate() })
         placeholderConstraints?.forEach({ $0.constraint.activate() })
-        
+        placeholderWidthConstraint?.constant = placeholderLabelTextWidth
+
         if animated {
             let duration = Constants.floatingPlaceholderAnimationDuration
             let dampingRatio = Constants.floatingPlaceholderDampingRatio
@@ -249,7 +299,6 @@ extension FloatyControl {
             UIView.animationQ.add(duration: duration, options: .curveEaseIn, dampingRatio: dampingRatio) { [weak self] in
                 guard let strongSelf = self else { return }
                 strongSelf.borderView.layoutIfNeeded()
-                strongSelf.placeholderLabel.transform = CGAffineTransform(scaleX: 1, y: 1)
             }.start()
         } else {
             updateViews()
@@ -291,7 +340,7 @@ extension FloatyControl {
         let rightBorderLayer = setupShapeLayer()
         rightBorderLayer.path = animationPaths.rightPath.cgPath
         self.rightBorderLayer = rightBorderLayer
-        
+
         [leftBorderLayer, rightBorderLayer].forEach { (layer) in
             layer.strokeColor = isPlaceholderFloating ? superviewBackgroundColor?.cgColor : borderColor.cgColor
             layer.strokeStart = 0

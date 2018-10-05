@@ -65,7 +65,7 @@ struct BorderFactory {
             topRightPoint = (containerWidth + config.textSpace) / 2
         case .leading:
             topLeftPoint = FloatyConstants.leadingPadding
-            topRightPoint = topLeftPoint + config.textSpace + 2 * config.sidePadding + (config.cornerRadius - FloatyConstants.leadingPadding)
+            topRightPoint = topLeftPoint + config.textSpace + 2 * config.sidePadding 
         case .trailing:
             topRightPoint = containerWidth - FloatyConstants.leadingPadding - 2 * config.sidePadding
             topLeftPoint = topRightPoint - config.textSpace
