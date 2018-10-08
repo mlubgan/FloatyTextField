@@ -30,6 +30,7 @@ public class FloatyLabel: FloatyControl {
     override func setup() {
         super.setup()
 
+        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         isPlaceholderFloating = true
     }
 

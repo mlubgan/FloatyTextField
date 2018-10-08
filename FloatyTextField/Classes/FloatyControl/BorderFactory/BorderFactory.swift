@@ -16,7 +16,7 @@ struct BorderFactory {
         let containerWidth = config.containerSize.width
         let containerHeight = config.containerSize.height
         let cornerRadius = config.cornerRadius
-        let cornerRadiusConstant = acos((cornerRadius - FloatyConstants.leadingPadding) / cornerRadius)
+        let cornerRadiusConstant = acos((cornerRadius - (FloatyConstants.leadingPadding)) / cornerRadius)
 
         let gapPoints = findEdgePoints(config: config)
 
@@ -64,7 +64,7 @@ struct BorderFactory {
             topLeftPoint = (containerWidth - config.textSpace) / 2
             topRightPoint = (containerWidth + config.textSpace) / 2
         case .leading:
-            topLeftPoint = FloatyConstants.leadingPadding
+            topLeftPoint = FloatyConstants.leadingPadding 
             topRightPoint = topLeftPoint + config.textSpace + 2 * config.sidePadding 
         case .trailing:
             topRightPoint = containerWidth - FloatyConstants.leadingPadding - 2 * config.sidePadding

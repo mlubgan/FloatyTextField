@@ -83,6 +83,7 @@ public class FloatyTextView: FloatyControl {
     override func setup() {
         delegate = floatyTextViewDelegate
         textView.backgroundColor = .clear
+        textView.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         
         super.setup()
     }

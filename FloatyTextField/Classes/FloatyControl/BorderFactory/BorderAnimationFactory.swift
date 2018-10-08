@@ -16,7 +16,7 @@ struct BorderAnimationFactory {
         let containerWidth = config.containerSize.width
         let halfOfText = config.textSpace / 2
         let cornerRadius = config.cornerRadius
-        let cornerRadiusConstant = acos((cornerRadius - FloatyConstants.leadingPadding) / cornerRadius)
+        let cornerRadiusConstant = acos((cornerRadius - (FloatyConstants.leadingPadding)) / cornerRadius)
 
         let centerX: CGFloat
         let topLeftPoint: CGFloat

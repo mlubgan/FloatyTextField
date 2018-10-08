@@ -40,7 +40,8 @@ public class FloatyTextField: FloatyControl {
 
     override func setup() {
         super.setup()
-
+        
+        textField.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         textField.addTarget(self, action: #selector(textFieldDidBeginEditing), for: .editingDidBegin)
         textField.addTarget(self, action: #selector(textFieldDidEndEditing), for: .editingDidEnd)
     }

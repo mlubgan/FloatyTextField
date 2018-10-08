@@ -8,10 +8,12 @@
 import Foundation
 
 struct FloatyConstants {
-    
+
     private init() { }
-    
+
     // MARK: - View's Constants
-    static let leadingPadding: CGFloat = 16
-    
+    static let leadingPadding: CGFloat = 12
+    static let sidePadding: CGFloat = 4
+
 }
+
