@@ -92,7 +92,7 @@ public class FloatyTextView: FloatyControl {
         super.doLayout()
         
         placeholderLabel.snp.makeConstraints { (make) in
-            let constraints = make.leading.trailing.top.equalTo(inputField).priority(750)
+            let constraints = make.leading.top.equalTo(inputField).priority(750)
             placeholderConstraints = [constraints]
         }
         

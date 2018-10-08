@@ -50,7 +50,7 @@ public class FloatyTextField: FloatyControl {
         super.doLayout()
 
         placeholderLabel.snp.makeConstraints { (make) in
-            let constraints = make.edges.equalTo(Constants.paddings).priority(750)
+            let constraints = make.leading.top.equalTo(Constants.paddings).priority(750)
             placeholderConstraints = [constraints]
         }
 
