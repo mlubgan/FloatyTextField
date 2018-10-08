@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'FloatyTextField'
-  s.version          = '0.3.3'
+  s.version          = '0.3.4'
   s.summary          = 'FloatyTextField provides material design inspired TextField and TextView.'
   s.swift_version = '4.0'
   s.description      = <<-DESC
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.homepage         = 'https://github.com/mlubgan/FloatyTextField'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Michał Łubgan' => 'm.lubgan@fivedottwelve.com' }
-  s.source           = { :git => 'https://github.com/mlubgan/FloatyTextField.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/mlubgan/FloatyTextField.git', :tag => s.version }
   s.ios.deployment_target = '10.0'
   s.source_files = 'FloatyTextField/Classes/**/*'
   s.ios.framework = 'UIKit'
