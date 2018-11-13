@@ -83,6 +83,8 @@ public class FloatyTextView: FloatyControl {
     override func setup() {
         delegate = floatyTextViewDelegate
         textView.backgroundColor = .clear
+        textView.textContainerInset = .zero
+        textView.tintColor = .black
         textView.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         
         super.setup()
@@ -112,7 +114,7 @@ private extension FloatyTextView {
         private init() { }
         
         // MARK: - InputField and PlaceholderLabel Constants
-        static let paddings = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        static let paddings = UIEdgeInsets(top: 16, left: 11, bottom: 16, right: 16)
         
     }
     
