@@ -25,7 +25,7 @@ public class FloatyPasswordField: FloatyTextField {
 
     // MARK: - Properties
     private lazy var rightButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
         button.setTitle(nil, for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
@@ -63,13 +63,6 @@ public class FloatyPasswordField: FloatyTextField {
         rightButton.setImage(image, for: .normal)
         
         textField.isSecureTextEntry = secure
-        if let existingText = text {
-            textField.deleteBackward()
-            
-            if let textRange = textField.textRange(from: textField.beginningOfDocument, to: textField.endOfDocument) {
-                textField.replace(textRange, withText: existingText)
-            }
-        }
     }
 
     // MARK: - Instance Methods
